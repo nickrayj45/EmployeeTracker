@@ -39,8 +39,7 @@ function userQuestions() {
         "View a depratment",
         "View a role?",
         "View an employee?",
-        // Update an employee's role?
-        "Update an employee?",
+        "Update an employee's role??",
         "Complete?"
       ]
     })
@@ -88,11 +87,16 @@ function createDepartment() {
       {
           name: answer.newDept
       },
-      function(err) {
+      function(err, res) {
           if (err) throw err;
+          console.log(res)
+          console.table(res)
           console.log("You created a new department")
-          userQuestions()
+
       })
+
+      userQuestions()
+
   })
 }
 
@@ -116,49 +120,51 @@ function createRole() {
   .then(function(answer) {
       //no need for user to view this
       //var query = "SELECT name FROM department";
-      connection.query("INSERT INTO department SET ?",
+      connection.query("SELECT id FROM department INNER JOIN role ON department_id?",
       {
           title: answer.newRole,
           salary: answer.addSalary,
           department_id: answer.deptId
       },
-      function(err) {
+      function(err, res) {
           if (err) throw err;
           console.log("You created a new role")
       })
   })
 }
-  function addEmployee() {
-    inquirer.prompt([
-      {
-        name: "first_name",
-        type: "input",
-        message: "What is the employee's first name?"
-      },
-      {
-        name: "last_name",
-        type: "input",
-        message: "What is the employee's last name?"
-      },
-      {
-        name: "role",
-        type: "input",
-        message: "What is the employee's role?"
-      }])   
-    .then(function(answer) {
-        //no need for user to view this
-        //var query = "SELECT name FROM department";
-        connection.query("INSERT INTO department SET ?",
-        {
-            first_name: answer.first_name,
-            last_name: answer.last_name,
-            role: answer.role
-        },
-        function(err) {
-            if (err) throw err;
-            console.log("You created a new employee")
-        })
-    })
+//   function addEmployee() {
+//     inquirer.prompt([
+//       {
+//         name: "first_name",
+//         type: "input",
+//         message: "What is the employee's first name?"
+//       },
+//       {
+//         name: "last_name",
+//         type: "input",
+//         message: "What is the employee's last name?"
+//       },
+//       {
+//         name: "role",
+//         type: "input",
+//         message: "What is the employee's role?"
+//       }])   
+//     .then(function(answer) {
+//         //no need for user to view this
+//         //var query = "SELECT name FROM department";
+//         connection.query("INSERT INTO department SET ?",
+//         {
+//             first_name: answer.first_name,
+//             last_name: answer.last_name,
+//             role: answer.role
+//         },
+//         function(err, res) {
+//             if (err) throw err;
+//             console.log("You created a new employee")
+//         })
+//     })
   
 
-}
+// }
+
+// View functions should be select queries console.log(response from queries)

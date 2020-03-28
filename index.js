@@ -16,7 +16,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "4461Gate!",
+  password: "",
   database: "work_db"
 });
 
@@ -141,47 +141,54 @@ function createRole() {
 }
 function addEmployee() {
   connection.query("SELECT * FROM role", function(err, res) {
-    var roleChoices = res.map(({id, title}) => ({value:id, name:title}))   
-    connection.query("SELECT first_name, last_name, employee.id FROM employee LEFT JOIN role ON employee.role_id = role.id WHERE role.title = 'Manager'",    
-    function(err, res) {        
-      var managerList = res.map(({first_name, last_name, id}) => ({value:id, name:`${first_name} ${last_name}`}))
-    inquirer
-      .prompt([
-        {
-          name: "first_name",
-          type: "input",
-          message: "What is the employee's first name?"
-        },
-        {
-          name: "last_name",
-          type: "input",
-          message: "What is the employee's last name?"
-        },
-        {
-          name: "role",
-          type: "input",
-          message: "What is the employee's role?",
-          choices: roleChoices
-        }
-        
-      ])
-      .then(function(answer) {
-        //no need for user to view this
-        //var query = "SELECT name FROM department";
-        connection.query(
-          "INSERT INTO employee SET ?",
-          {
-            first_name: answer.first_name,
-            last_name: answer.last_name,
-            role_id: answer.role
-          },
-          function (err) {
-            if (err) throw err;
-            console.log("You created a new employee");
-            userQuestions();
-          }
-        );
-      });
+    var roleChoices = res.map(({ id, title }) => ({ value: id, name: title }));
+    // console.log(roleChoices);
+
+    connection.query(
+      "SELECT first_name, last_name, employee.id FROM employee LEFT JOIN role ON employee.role_id = role.id WHERE role.title = 'Manager'",
+      function(err, res) {
+        var managerList = res.map(({ first_name, last_name, id }) => ({
+          value: id,
+          name: `${first_name} ${last_name}`
+        }));
+        inquirer
+          .prompt([
+            {
+              name: "first_name",
+              type: "input",
+              message: "What is the employee's first name?"
+            },
+            {
+              name: "last_name",
+              type: "input",
+              message: "What is the employee's last name?"
+            },
+            {
+              name: "role",
+              type: "input",
+              message: "What is the employee's role number?",
+              choices: roleChoices
+            }
+          ])
+          .then(function(answer) {
+            //no need for user to view this
+            //var query = "SELECT name FROM department";
+            connection.query(
+              "INSERT INTO employee SET ?",
+              {
+                first_name: answer.first_name,
+                last_name: answer.last_name,
+                role_id: answer.role
+              },
+              function(err) {
+                if (err) throw err;
+                console.log("You created a new employee");
+                userQuestions();
+              }
+            );
+          });
+      }
+    );
   });
 }
 
@@ -192,7 +199,6 @@ function viewDepartment() {
     if (err) throw err;
     console.table(res);
     userQuestions();
-
   });
 }
 
@@ -201,7 +207,6 @@ function viewRole() {
     if (err) throw err;
     console.table(res);
     userQuestions();
-
   });
 }
 
@@ -210,6 +215,5 @@ function viewEmployee() {
     if (err) throw err;
     console.table(res);
     userQuestions();
-
   });
 }

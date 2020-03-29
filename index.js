@@ -25,6 +25,7 @@ connection.connect(function(err) {
   userQuestions();
 });
 
+// Function to ask the user what they would like to do
 function userQuestions() {
   inquirer
     .prompt({
@@ -39,7 +40,7 @@ function userQuestions() {
         "View a department?",
         "View a role?",
         "View an employee?",
-        "Update an employee's role??",
+        "Update an employee's role?",
         "Complete?"
       ]
     })
@@ -74,6 +75,8 @@ function userQuestions() {
     });
 }
 
+// Functions that allow the user to enter in the data
+// Function that creates the deaprtment
 function createDepartment() {
   inquirer
     .prompt({
@@ -82,8 +85,6 @@ function createDepartment() {
       message: "What is the name of the department would you like to add?"
     })
     .then(function(answer) {
-      //no need for user to view this
-      //var query = "SELECT name FROM department";
       connection.query(
         "INSERT INTO department SET ?",
         {
@@ -100,6 +101,7 @@ function createDepartment() {
     });
 }
 
+// Function that allows the user to create a role
 function createRole() {
   inquirer
     .prompt([
@@ -120,9 +122,6 @@ function createRole() {
       }
     ])
     .then(function(answer) {
-      //no need for user to view this
-      //var query = "SELECT name FROM department";
-      // SELECT id FROM department INNER JOIN role ON department_id?
       connection.query(
         "INSERT INTO role SET ?",
         {
@@ -139,6 +138,9 @@ function createRole() {
       );
     });
 }
+
+// Function that allows the user to add an employee
+
 function addEmployee() {
   connection.query("SELECT * FROM role", function(err, res) {
     var roleChoices = res.map(({ id, title }) => ({ value: id, name: title }));
@@ -171,8 +173,6 @@ function addEmployee() {
             }
           ])
           .then(function(answer) {
-            //no need for user to view this
-            //var query = "SELECT name FROM department";
             connection.query(
               "INSERT INTO employee SET ?",
               {
@@ -193,7 +193,7 @@ function addEmployee() {
 }
 
 // View functions should be select queries console.log(response from queries)
-
+// Function that allows the user to view the departments created
 function viewDepartment() {
   connection.query("SELECT * FROM department", function(err, res) {
     if (err) throw err;
@@ -201,7 +201,7 @@ function viewDepartment() {
     userQuestions();
   });
 }
-
+// Function that allows the user to view the roles created
 function viewRole() {
   connection.query("SELECT * FROM role", function(err, res) {
     if (err) throw err;
@@ -210,10 +210,43 @@ function viewRole() {
   });
 }
 
+// Function that allows the user to view the employees created
 function viewEmployee() {
   connection.query("SELECT * FROM employee", function(err, res) {
     if (err) throw err;
     console.table(res);
     userQuestions();
   });
+}
+
+// Function that allows the user to update information for an employee
+function updateEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "FirstName",
+        type: "input",
+        message: "What is the employee's first name?"
+      },
+      {
+        name: "LastName",
+        type: "input",
+        message: "What is the employee's new role ID?"
+      }
+    ])
+    .then(function(answer) {
+      connection.query(
+        "UPDATE employee SET fist_name, last_name, role_id WHERE role",
+        {
+          first_name: answer.first_name,
+          last_name: answer.last_name,
+          role_id: answer.role_id
+        },
+        function(err, res) {
+          if (err) throw err;
+          console.log("You have updated a role");
+          userQuestions();
+        }
+      );
+    });
 }
